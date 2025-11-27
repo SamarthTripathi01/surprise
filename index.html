@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>For You 💖</title>
+<style>
+  :root{
+    --accent1:#ff4f84;
+    --accent2:#b44fff;
+    --bg:#080b12;
+    --text:#e9ecff;
+    --glass:rgba(255,255,255,0.07);
+  }
+  *{box-sizing:border-box;font-family:'Poppins',sans-serif}
+  body{
+    margin:0;background:radial-gradient(circle at 50% 0%,rgba(180,79,255,.08),transparent 50%),var(--bg);
+    color:var(--text);
+    display:flex;align-items:center;justify-content:center;
+    padding:22px;min-height:100vh;
+  }
+  .card{
+    width:100%;max-width:430px;padding:20px;border-radius:18px;
+    background:linear-gradient(135deg,rgba(255,255,255,0.02),rgba(255,255,255,0.007));
+    backdrop-filter:blur(8px);
+    box-shadow:0 0 26px rgba(0,0,0,.65);
+    animation:fadeIn .8s ease;
+  }
+  header{text-align:center;margin-bottom:18px}
+  header h1{margin:0;font-size:24px;font-weight:700}
+  .sub{font-size:13px;opacity:.8;margin-top:6px}
+
+  /* OTP input */
+  .otp-box{margin-top:18px;display:flex;gap:10px;justify-content:center}
+  .otp-digit{
+    width:58px;height:60px;text-align:center;font-size:26px;
+    border-radius:12px;border:2px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.05);color:var(--text);
+    outline:none;transition:.25s;
+  }
+  .otp-digit:focus{transform:scale(1.07);border-color:var(--accent1)}
+
+  .btn{
+    margin-top:14px;width:100%;padding:14px;font-size:18px;
+    border:none;border-radius:14px;cursor:pointer;font-weight:600;
+    background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;
+    box-shadow:0 0 15px rgba(255,79,140,.26);
+    transition:.25s;
+  }
+  .btn:active{transform:scale(.97)}
+
+  .msg{margin-top:14px;text-align:center;min-height:20px;font-size:14px}
+
+  /* reveal area */
+  .reveal{
+    margin-top:22px;padding:18px;border-radius:16px;background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.06);display:none;animation:reveal .9s ease forwards;
+  }
+  .text-heart{
+    font-size:17px;font-weight:600;text-align:center;
+    animation:heartbeat 1.8s infinite ease-in-out;
+  }
+
+  /* Reel preview */
+  .reel{
+    margin-top:18px;border-radius:16px;overflow:hidden;background:#000;
+    border:1px solid rgba(255,255,255,.08)
+  }
+  .reel .thumb{
+    height:250px;background:url('https://share.google/Cqc1Jt7cLpS04T9SX') center/cover no-repeat;
+    position:relative;display:flex;align-items:flex-end;padding:12px;color:white;
+  }
+  .play{
+    margin-left:auto;background:rgba(255,255,255,.2);padding:12px;
+    border-radius:50%;font-size:20px;cursor:pointer;
+    backdrop-filter:blur(4px);
+  }
+  .meta{padding:12px;font-size:14px}
+  .meta strong{font-size:15px}
+
+  /* confetti */
+  .confetti{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;overflow:hidden}
+  .piece{
+    position:absolute;width:8px;height:12px;border-radius:2px;
+    animation:fall var(--t) linear forwards;
+  }
+
+  @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}}
+  @keyframes reveal{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+  @keyframes heartbeat{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  @keyframes fall{to{transform:translateY(110vh) rotate(620deg)}}
+  .shake{animation:shake .6s}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}60%{transform:translateX(6px)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <header>
+    <h1>For You 💖</h1>
+    <div class="sub">Enter the OTP I sent to unlock something special</div>
+  </header>
+
+  <div class="otp-box">
+    <input class="otp-digit" maxlength="1" id="d0" inputmode="numeric">
+    <input class="otp-digit" maxlength="1" id="d1" inputmode="numeric">
+    <input class="otp-digit" maxlength="1" id="d2" inputmode="numeric">
+    <input class="otp-digit" maxlength="1" id="d3" inputmode="numeric">
+  </div>
+
+  <button class="btn" id="verifyBtn">Unlock</button>
+  <div class="msg" id="msg"></div>
+
+  <div class="reveal" id="reveal">
+    <div class="text-heart">This reel is for you ❤️</div>
+
+    <div class="reel">
+      <div class="thumb">
+        <div>
+          <div style="font-weight:700">For you</div>
+          <div style="font-size:12px;opacity:.9">A little surprise</div>
+        </div>
+        <div class="play" id="playBtn">▶</div>
+      </div>
+      <div class="meta">
+        <strong>@stsamarthmusic</strong><br>
+        Caption: “No caption needed 💞”
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="confetti" class="confetti"></div>
+
+<script>
+  const FIXED_OTP = "6958";
+  const btn = document.getElementById("verifyBtn");
+  const inputs = [...document.querySelectorAll(".otp-digit")];
+  const msg = document.getElementById("msg");
+  const reveal = document.getElementById("reveal");
+  const confetti = document.getElementById("confetti");
+
+  inputs.forEach((el,i)=>{
+    el.addEventListener("input",()=>{
+      el.value = el.value.replace(/[^0-9]/g,"").slice(0,1);
+      if(el.value && i < inputs.length-1) inputs[i+1].focus();
+    });
+    el.addEventListener("keydown",e=>{
+      if(e.key==="Backspace" && !el.value && i>0) inputs[i-1].focus();
+    });
+  });
+
+  function fireConfetti(){
+    confetti.innerHTML="";
+    for(let i=0;i<38;i++){
+      let p=document.createElement("div");
+      p.className="piece";
+      p.style.left=Math.random()*100+"vw";
+      p.style.top="-20px";
+      p.style.background=["#ff4f84","#b44fff","#ffd166","#2dde9d"][Math.floor(Math.random()*4)];
+      p.style.setProperty("--t", 2 + Math.random()*2 + "s");
+      confetti.appendChild(p);
+      setTimeout(()=>p.remove(),5000);
+    }
+  }
+
+  btn.addEventListener("click",()=>{
+    const entered = inputs.map(i=>i.value).join("");
+    if(entered === FIXED_OTP){
+      msg.textContent="";
+      reveal.style.display="block";
+      fireConfetti();
+      inputs.forEach(i=>i.value="");
+    }else{
+      msg.textContent = "Incorrect OTP — try again";
+      msg.classList.add("shake");
+      setTimeout(()=>msg.classList.remove("shake"),600);
+    }
+  });
+
+  document.getElementById("playBtn").addEventListener("click",()=>{
+    // Replace with real reel link
+    const reelURL = "https://www.instagram.com/reel/DL6WcY1Tx7x/?igsh=MXR0dGxhbmloazUzeg==";
+    window.open(reelURL,"_blank");
+  });
+</script>
+</body>
+</html>
